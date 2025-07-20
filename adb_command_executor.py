@@ -1,11 +1,12 @@
 import subprocess
+from time import sleep
 
 
 class AdbCommandExecutor:
     ADB_PATH: str = r"C:\Users\Admin\Downloads\platform-tools-latest-windows\platform-tools\adb.exe"
 
     @staticmethod
-    def execute(args: str):
+    def execute(args: str, wait=0):
         full_command = f"{AdbCommandExecutor.ADB_PATH} {args}"
         print(f"{full_command=}")
 
@@ -23,6 +24,8 @@ class AdbCommandExecutor:
 
         if exit_code == 0:
             print("STDOUT: ", stdout)
+            if wait != 0:
+                sleep(wait)
         else:
             print("Exit Code: ", exit_code)
             print("STDERR: ", stderr)
