@@ -29,9 +29,8 @@ class AdbCommandExecutor:
         else:
             print("Exit Code: ", exit_code)
             print("STDERR: ", stderr)
-            exit(1)
 
-        return process.returncode
+        return process.returncode, stdout
 
     @staticmethod
     def capture_remote_screen(image_name: str):
@@ -51,3 +50,18 @@ class AdbCommandExecutor:
                 print("Exit Code: ", exit_code)
                 print("STDERR: ", stderr)
                 exit(1)
+
+    @staticmethod
+    def is_app_running(app):
+        returncode, stdout_pid = AdbCommandExecutor.execute(f"shell pidof {app}")
+        return returncode == 0 and stdout_pid != ""
+
+    @staticmethod
+    def run_app_and_bring_to_foreground(app):
+        command: str = f"shell monkey -p {app} -c android.intent.category.LAUNCHER 1"
+        if not AdbCommandExecutor.is_app_running(app):
+            # Start application from scratch
+            AdbCommandExecutor.execute(command, wait=50)
+        else:
+            # Bring to foreground
+            AdbCommandExecutor.execute(command, wait=2)
